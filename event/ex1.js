@@ -13,3 +13,6 @@ var Ticker = function() {
 util.inherits(Ticker, EventEmitter);
 
 var ticker = new Ticker();
+ticker.addListener('tick', function () {
+  console.log('TICK');
+});
