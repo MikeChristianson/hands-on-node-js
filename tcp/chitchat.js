@@ -9,22 +9,28 @@ function handleNewConnection(socket) {
   chatters.push(socket);
 
   function relayDataToOtherChatters(sourceSocket, data) {
-    _.chain(chatters)
+    chatters
       .filter(function (socket) { return socket !== sourceSocket })
       .forEach(function (socket) { socket.write(data) });
   }
 
   function handleIncomingData(data) {
-    console.log('got this from someone', data);
+    console.log('someone said', data.toString());
     relayDataToOtherChatters(socket, data);
   }
 
-  function handleConnectionClosed(data) {
-    console.log('someone said goodbye', data);
+  function handleConnectionClosed() {
+    console.log('someone said goodbye');
+    _.remove(chatters, function (s) { return socket === s });
+  }
+
+  function handleError(error) {
+    console.warn('someone had a problem', error);
   }
 
   socket.on('data', handleIncomingData);
   socket.on('end', handleConnectionClosed);
+  socket.on('error', handleError);
 };
 
 net.createServer(handleNewConnection).listen(3000);
