@@ -10,7 +10,7 @@ function handleNewConnection(socket) {
 
   socket.on('data', _.partial(handleIncomingData, socket));
   socket.on('end', _.partial(handleConnectionClosed, socket));
-  socket.on('error', handleError);
+  socket.on('error', _.partial(handleError, socket));
 };
 
 net.createServer(handleNewConnection).listen(3000);
@@ -31,7 +31,8 @@ function handleConnectionClosed(socket) {
   _.remove(chatters, function (s) { return socket === s });
 }
 
-function handleError(error) {
+function handleError(socket, error) {
   console.warn('someone had a problem', error);
+  handleConnectionClosed(socket);
 }
 
